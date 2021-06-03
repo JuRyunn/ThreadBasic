@@ -9,40 +9,56 @@ import android.util.Log;
 public class MainActivity extends AppCompatActivity {
 
     WorkerThread wt;
-    WorkerThread wr;
+    Thread wr;
 
     boolean running = true;
-
+    boolean run = true;
     String TAG = "THREAD";
-    //final String TAG = "TREAD2";
+    String TAG2 = "THREAD2";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        wt = new WorkerThread();
+        wt.start();
     }
-
-    class WorkerThread extends Thread{
+    class WorkerThread extends Thread {
         public void run(){
             int i = 0;
-            for (i = 0; i<20 && running; i++){
-                try{
-                    Thread.sleep(1000);
-                } catch (InterruptedException e){
-                }
-                Log.v(TAG, "Thread Time=" +i);
+            for (i = 0; i < 20 && run; i++){
+            } try{
+                Thread.sleep(1000);
+            } catch (InterruptedException e){
+                Log.v(TAG, "Thread Time = " +i);
+                Log.v(TAG2, "Runnable Time = " +i);
             }
         }
     }
 
     @Override
-    public void onStart(){
+    protected void onStart(){
         super.onStart();
+
         running = true;
-        wt = new WorkerThread();
-        wt.start();
-        Log.v(TAG, "Now I am in onStart");
+        wr = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int i = 0;
+                for (i = 0; i < 20 && running; i++) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                    }
+                    Log.v(TAG, "Runnable time=" + i);
+                }
+            }
+        });
+        wr.start();
+        Log.v(TAG, "NowI am in onStart");
     }
+
 
     @Override
     public void onStop(){
@@ -64,4 +80,5 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         Log.v(TAG, "Now I am in onResume");
     }
+
 }
